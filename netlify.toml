@@ -1,0 +1,33 @@
+# Netlify configuration for the Ultra Aluminum login/signup portal.
+# Docs: https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  # Vite's `build` script writes the production bundle to `dist/`.
+  command   = "npm run build"
+  publish   = "dist"
+
+  # Re-deploy only when meaningful files change.
+  ignore = "git diff --quiet HEAD^ HEAD -- ."
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Don't fail the build if a peer dep is unhappy.
+  NPM_FLAGS    = "--legacy-peer-deps"
+
+# ── Redirects & headers ──────────────────────────────────────
+# This is a single-page React app, so all unknown paths must
+# fall back to index.html so client-side routing / refreshes work.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# Cache the single-file bundle aggressively; it has a content
+# hash in the filename, so this is safe to cache forever.
+[[headers]]
+  for   = "/*"
+  [headers.values]
+    X-Frame-Options        = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+    Permissions-Policy     = "camera=(), microphone=(), geolocation=()"

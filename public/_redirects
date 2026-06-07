@@ -1,0 +1,7 @@
+# Netlify _redirects file — also lives in /public so Vite copies it
+# into /dist on build. Mirrors the rule in netlify.toml.
+# This is a single-page React app, so all unknown paths must
+# fall back to index.html.
+# Docs: https://docs.netlify.com/routing/redirects/
+
+/*    /index.html   200
