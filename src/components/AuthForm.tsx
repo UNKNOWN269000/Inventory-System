@@ -291,7 +291,7 @@ export function AuthForm() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-black text-white lg:min-h-0">
+    <div className="relative flex min-h-[100dvh] w-full flex-col overflow-x-hidden bg-black text-white lg:min-h-0">
       {/* ── Biometric "Remember me" gate ─────────────────────── */}
       {gate.kind !== "open" && (
         <BiometricGate
@@ -303,36 +303,41 @@ export function AuthForm() {
 
       {/* Background accents for mobile / form side */}
       <div
-        className="pointer-events-none absolute -left-32 top-0 h-72 w-72 rounded-full opacity-30 blur-[100px]"
+        className="pointer-events-none absolute -left-24 -top-12 h-56 w-56 rounded-full opacity-25 blur-[80px] sm:h-72 sm:w-72 sm:blur-[100px] lg:-left-32"
         style={{ background: "#00ff00" }}
       />
       <div
-        className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full opacity-20 blur-[120px]"
+        className="pointer-events-none absolute -right-24 -bottom-12 h-64 w-64 rounded-full opacity-15 blur-[90px] sm:h-80 sm:w-80 sm:blur-[120px] lg:-right-32"
         style={{ background: "#00ff00" }}
       />
-      <div className="absolute inset-0 grid-bg opacity-20" />
+      <div className="absolute inset-0 grid-bg opacity-15 sm:opacity-20" />
 
       {/* Top bar (mobile logo) */}
-      <div className="relative z-10 flex items-center justify-between p-6 lg:hidden">
-        <div className="flex items-center gap-2">
-          <div className="relative">
+      <div className="relative z-10 flex items-center justify-between px-5 pt-5 pb-2 sm:px-8 sm:pt-6 lg:hidden">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="relative flex-shrink-0">
             <div className="absolute inset-0 rounded-full bg-[#00ff00] blur-md opacity-60" />
             <img
               src={logoUrl}
               alt="Ultra Aluminum Pvt Ltd logo"
-              className="relative h-10 w-10 rounded-full border-2 border-[#00ff00] object-cover shadow-[0_0_20px_rgba(0,255,0,0.5)]"
+              className="relative h-9 w-9 rounded-full border-2 border-[#00ff00] object-cover shadow-[0_0_20px_rgba(0,255,0,0.5)] sm:h-10 sm:w-10"
             />
           </div>
-          <span className="text-lg font-bold tracking-tight">Ultra Aluminum</span>
+          <span className="truncate text-base font-bold tracking-tight sm:text-lg">
+            Ultra Aluminum
+          </span>
         </div>
       </div>
 
       {/* Center form */}
-      <div className="relative z-10 flex flex-1 items-center justify-center px-5 py-8 sm:px-8">
+      <div className="relative z-10 flex flex-1 items-center justify-center px-5 py-6 sm:px-8 sm:py-8">
         <div className="w-full max-w-md">
           {/* Mode toggle pill */}
-          <div className="animate-slide-up mb-8 flex justify-center">
-            <div className="relative inline-flex rounded-full border border-white/10 bg-white/[0.04] p-1 backdrop-blur-sm">
+          <div className="animate-slide-up mb-6 flex justify-center sm:mb-8">
+            <div
+              className="relative inline-flex rounded-full border border-white/10 bg-white/[0.04] p-1 backdrop-blur-sm"
+              role="tablist"
+            >
               {/* Animated background slider */}
               <div
                 className={cn(
@@ -342,9 +347,11 @@ export function AuthForm() {
               />
               <button
                 type="button"
+                role="tab"
+                aria-selected={mode === "login"}
                 onClick={() => switchMode("login")}
                 className={cn(
-                  "relative z-10 rounded-full px-6 py-2 text-sm font-semibold transition-colors duration-300",
+                  "relative z-10 min-w-[110px] rounded-full px-5 py-2.5 text-sm font-semibold transition-colors duration-300 sm:min-w-[120px] sm:px-6",
                   mode === "login" ? "text-black" : "text-white/60 hover:text-white"
                 )}
               >
@@ -352,9 +359,11 @@ export function AuthForm() {
               </button>
               <button
                 type="button"
+                role="tab"
+                aria-selected={mode === "signup"}
                 onClick={() => switchMode("signup")}
                 className={cn(
-                  "relative z-10 rounded-full px-6 py-2 text-sm font-semibold transition-colors duration-300",
+                  "relative z-10 min-w-[110px] rounded-full px-5 py-2.5 text-sm font-semibold transition-colors duration-300 sm:min-w-[120px] sm:px-6",
                   mode === "signup" ? "text-black" : "text-white/60 hover:text-white"
                 )}
               >
@@ -364,11 +373,11 @@ export function AuthForm() {
           </div>
 
           {/* Heading */}
-          <div className="animate-slide-up mb-8 text-center" key={mode + "-heading"}>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <div className="animate-slide-up mb-6 text-center sm:mb-8" key={mode + "-heading"}>
+            <h2 className="text-[1.65rem] font-bold leading-tight tracking-tight sm:text-4xl">
               {mode === "login" ? "Member Sign In" : "Create Account"}
             </h2>
-            <p className="mt-2 text-sm text-white/50">
+            <p className="mt-2 px-2 text-sm text-white/50 sm:px-0">
               {mode === "login"
                 ? "Access your Ultra Aluminum partner & order portal"
                 : "Register to request quotes, track orders, and more"}
@@ -376,9 +385,9 @@ export function AuthForm() {
           </div>
 
           {/* Divider */}
-          <div className="animate-slide-up mb-6 flex items-center gap-3">
+          <div className="animate-slide-up mb-6 flex items-center gap-3 px-1">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40">
+            <span className="whitespace-nowrap text-[10px] font-mono uppercase tracking-[0.18em] text-white/50 sm:text-[11px] sm:tracking-[0.2em]">
               continue with username
             </span>
             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
@@ -447,6 +456,10 @@ export function AuthForm() {
                   onBlur={() => setFocused(null)}
                   placeholder="alex_Carter"
                   autoComplete="username"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  inputMode="text"
                   className="w-full bg-transparent pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/30 outline-none"
                 />
               </Field>
@@ -484,6 +497,10 @@ export function AuthForm() {
                   onBlur={() => setFocused(null)}
                   placeholder="••••••••••"
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  enterKeyHint={mode === "login" ? "go" : "next"}
                   className="w-full bg-transparent pl-11 pr-12 py-3.5 text-sm text-white placeholder-white/30 outline-none"
                 />
               </Field>
@@ -515,7 +532,7 @@ export function AuthForm() {
                       />
                     ))}
                   </div>
-                  <ul className="grid grid-cols-2 gap-1.5 pt-1 text-[11px] text-white/40">
+                  <ul className="grid grid-cols-1 gap-1.5 pt-1 text-[11px] text-white/40 sm:grid-cols-2">
                     <Req met={form.password.length >= 8} label="8+ characters" />
                     <Req met={/[A-Z]/.test(form.password)} label="Uppercase letter" />
                     <Req met={/[0-9]/.test(form.password)} label="Number" />
@@ -558,6 +575,10 @@ export function AuthForm() {
                     onBlur={() => setFocused(null)}
                     placeholder="••••••••••"
                     autoComplete="new-password"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    enterKeyHint="done"
                     className="w-full bg-transparent pl-11 pr-12 py-3.5 text-sm text-white placeholder-white/30 outline-none"
                   />
                 </Field>
@@ -587,7 +608,7 @@ export function AuthForm() {
 
             {/* Remember / Forgot (login) */}
             {mode === "login" && (
-              <div className="flex items-center justify-between pt-1 text-sm animate-slide-up">
+              <div className="flex flex-col-reverse items-start gap-2 pt-1 text-sm animate-slide-up sm:flex-row sm:items-center sm:justify-between sm:gap-0">
                 <Checkbox
                   checked={form.remember}
                   onChange={handleChange("remember")}
@@ -688,7 +709,7 @@ const ADMIN_WHATSAPP_URL = `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${ADMIN_
 function SignupSuccessPopup({ onClose }: { onClose: () => void }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="signup-success-title"
@@ -700,7 +721,7 @@ function SignupSuccessPopup({ onClose }: { onClose: () => void }) {
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-sm animate-scale-in overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-neutral-900 to-black shadow-[0_0_60px_rgba(0,255,0,0.15)]">
+      <div className="safe-pad relative z-10 w-full max-w-sm animate-scale-in overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-neutral-900 to-black shadow-[0_0_60px_rgba(0,255,0,0.15)]">
         {/* Top glow */}
         <div
           className="pointer-events-none absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full opacity-50 blur-3xl"
@@ -717,7 +738,7 @@ function SignupSuccessPopup({ onClose }: { onClose: () => void }) {
           <IconX className="h-4 w-4" />
         </button>
 
-        <div className="relative px-7 pt-10 pb-7 text-center">
+        <div className="relative px-5 pt-10 pb-6 text-center sm:px-7 sm:pb-7">
           {/* Success icon */}
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#00ff00] bg-[#00ff00]/10 pulse-glow">
             <IconCheck className="h-8 w-8 text-[#00ff00]" strokeWidth={3} />
@@ -778,7 +799,7 @@ function BiometricGate({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center p-5 animate-fade-in"
+      className="fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-6 animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="biometric-gate-title"
@@ -793,7 +814,7 @@ function BiometricGate({
       />
 
       {/* Card */}
-      <div className="relative z-10 w-full max-w-sm animate-scale-in overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-neutral-900 to-black p-8 text-center shadow-[0_0_60px_rgba(0,255,0,0.15)]">
+      <div className="safe-pad relative z-10 w-full max-w-sm animate-scale-in overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-neutral-900 to-black p-6 text-center shadow-[0_0_60px_rgba(0,255,0,0.15)] sm:p-8">
         {/* Top brand row */}
         <div className="mb-6 flex items-center justify-center gap-2">
           <div className="relative">
