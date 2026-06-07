@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Ultra Aluminium</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --accent-green: #56de4a;
+            --neon-green: #56de4a;
+            --bg-dark: #000000;
+            --surface-dark: #0d0f14;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .container { 
+            padding: 120px 20px 60px; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: auto;
+        }
+
+        .welcome-card {
+            width: 100%;
+            max-width: 600px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 32px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 48px;
+            backdrop-filter: blur(10px);
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: #36f740;
+            filter: blur(80px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .welcome-card::after {
+            content: '';
+            position: absolute;
+            top: var(--mouse-y);
+            left: var(--mouse-x);
+            width: 340px;
+            height: 340px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle at center, rgba(86, 222, 74, 0.45), rgba(86, 222, 74, 0.08) 35%, transparent 70%);
+            filter: blur(28px);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .welcome-card:hover::after {
+            opacity: 1;
+        }
+        .welcome-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        .welcome-card h2 { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4em; color: #36f740; margin-bottom: 12px; }
+        .welcome-card h1 { 
+            font-size: 1.8rem; 
+            font-weight: 900; 
+            background: linear-gradient(to right, #fff, var(--accent-green)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 8px; 
+            text-transform: uppercase; 
+            letter-spacing: -0.5px; 
+            line-height: 1.1;
+        }
+        .welcome-card p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.95rem;
+            max-width: 340px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        .status-badge {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            background: rgba(86, 222, 74, 0.05);
+            border: 1px solid rgba(86, 222, 74, 0.15);
+            margin: 24px auto 0;
+            width: fit-content;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--neon-green);
+            box-shadow: 0 0 12px var(--neon-green);
+            animation: pulse 2s infinite;
+        }
+
+        .status-text {
+            margin: 0;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--neon-green);
+            white-space: nowrap;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Menu Styles */
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            margin-bottom: 6px;
+            width: 100%;
+            text-align: left;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            color: var(--accent-green);
+            background: rgba(86, 222, 74, 0.05);
+        }
+
+        .menu-item i { width: 1.2rem; height: 1.2rem; flex-shrink: 0; }
+        .menu-item .chevron-icon { margin-left: auto; width: 1rem; height: 1rem; }
+
+        .dropdown-content, .nested-content {
+            display: none;
+            flex-direction: column;
+            padding-left: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .active-link {
+            color: var(--accent-green);
+            background: rgba(86, 222, 74, 0.08);
+            box-shadow: 0 0 20px rgba(86, 222, 74, 0.05);
+        }
+
+        .sub-menu-item {
+            display: block;
+            padding: 10px 18px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+        }
+
+        .sub-menu-item:hover {
+            color: var(--accent-green);
+            background: rgba(86, 222, 74, 0.03);
+        }
+
+        .sub-menu-item.active-sub {
+            color: var(--accent-green);
+            background: rgba(86, 222, 74, 0.08);
+            box-shadow: 0 0 20px rgba(86, 222, 74, 0.05);
+        }
+
+        .chevron-icon { transition: transform 0.3s ease; }
+
+        .section-header {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 40px 0 10px;
+            padding: 0 10px;
+        }
+
+        .section-header span {
+            color: var(--accent-green);
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            white-space: nowrap;
+        }
+
+        .section-header .line {
+            height: 1px;
+            flex-grow: 1;
+            background: linear-gradient(to right, rgba(86, 222, 74, 0.3), transparent);
+        }
+
+        /* Hover Fill Animation */
+        .hover-fill {
+            position: relative;
+            overflow: hidden;
+            background: transparent !important;
+            transition: border-color 0.4s ease !important;
+        }
+
+        .hover-fill::before {
+            content: '';
+            position: absolute;
+            top: var(--mouse-y, 50%);
+            left: var(--mouse-x, 50%);
+            width: 0;
+            height: 0;
+            background: var(--fill-color, rgba(86, 222, 74, 0.15));
+            transition: width 0.8s cubic-bezier(0.23, 1, 0.32, 1), height 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hover-fill:hover::before {
+            width: 300%;
+            height: 600px;
+        }
+
+        .hover-fill:hover {
+            border-color: var(--border-hover, rgba(86, 222, 74, 0.4)) !important;
+        }
+
+        .hover-fill i {
+            color: rgba(255, 255, 255, 0.3) !important;
+            transition: color 0.4s ease !important;
+        }
+
+        .hover-fill span {
+            color: rgba(255, 255, 255, 0.5) !important;
+            transition: color 0.4s ease !important;
+        }
+
+        .hover-fill:hover i, .hover-fill:hover span {
+            color: var(--text-hover, #56de4a) !important;
+        }
+
+        /* Powder Coat Special Fill */
+        .powder-fill {
+            --fill-color: rgba(224, 0, 245, 0.15);
+            --border-hover: rgba(224, 0, 245, 0.4);
+            --text-hover: #e000f5;
+        }
+
+        /* Anodizing Special Fill */
+        .anodizing-fill {
+            --fill-color: rgba(4, 235, 252, 0.15);
+            --border-hover: rgba(4, 235, 252, 0.4);
+            --text-hover: #04ebfc;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 h-[70px] z-[4000] bg-black/80 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-8">
+        <div class="flex items-center gap-6">
+            <button id="menu-toggle" class="relative w-7 h-5 flex flex-col justify-between items-center group cursor-pointer z-[4001]" onclick="toggleSidebar()" aria-label="Toggle Menu">
+                <span class="w-full h-[2px] bg-white transition-all duration-300" id="bar1"></span>
+                <span class="w-full h-[2px] bg-white transition-all duration-300" id="bar2"></span>
+                <span class="w-full h-[2px] bg-white transition-all duration-300" id="bar3"></span>
+            </button>
+            
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center overflow-hidden">
+                    <img src="Src/logo.png" alt="Logo" class="w-full h-full object-cover opacity-80">
+                </div>
+                <h1 class="text-[#56de4a] font-bold tracking-tight text-xl leading-none uppercase">Ultra Aluminium</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[2999] opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" style="transform: translateX(-320px);" class="fixed top-0 left-0 bottom-0 w-[300px] bg-[#0d0f14] z-[3000] border-r border-white/5 transition-transform duration-300 pt-[70px] flex flex-col">
+        <div class="p-6 overflow-y-auto flex-1">
+            <div class="side-menu" id="menu">
+                <a href="index.html" class="menu-item active-link"><i data-lucide="home"></i> Home</a>
+
+                <div class="dropdown-container">
+                    <div class="menu-item" onclick="toggleDropdown('extrusionSub', this, event)">
+                        <i data-lucide="factory"></i> Extrusion
+                        <i data-lucide="chevron-down" class="chevron-icon"></i>
+                    </div>
+                    <div class="dropdown-content" id="extrusionSub">
+                        <a href="Extrusion/Bucket Income/index.html" class="sub-menu-item">Bucket Income</a>
+                        <a href="Extrusion/Profile Income/index.html" class="sub-menu-item">Profile Income</a>
+                        <a href="Extrusion/Aging Details/index.html" class="sub-menu-item">Aging Details</a>
+                        <a href="Extrusion/Overview/index.html" class="sub-menu-item">Overview</a>
+                    </div>
+                </div>
+
+                <div class="dropdown-container">
+                    <div class="menu-item" onclick="toggleDropdown('millSub', this, event)">
+                        <i data-lucide="layers"></i> Mill Finish
+                        <i data-lucide="chevron-down" class="chevron-icon"></i>
+                    </div>
+                    <div class="dropdown-content" id="millSub">
+                        <a href="Mill Finish/Hardness Check/index.html" class="sub-menu-item">Hardness Check</a>
+                        <a href="Mill Finish/Mill finish Profile Stock/index.html" class="sub-menu-item">Profile Stock</a>
+                        <a href="Mill Finish/Mill finish Bucket Stock/index.html" class="sub-menu-item">Bucket Stock</a>
+                        <div class="menu-item" style="font-size: 0.85rem; padding: 10px 14px; color: rgba(255,255,255,0.4);" onclick="toggleDropdown('millTransfer', this, event)">
+                            <i data-lucide="repeat" style="width:14px"></i> Transfer
+                            <i data-lucide="chevron-down" class="chevron-icon"></i>
+                        </div>
+                        <div class="nested-content" id="millTransfer">
+                            <a href="Mill Finish/Transfer/Anodizing/index.html" class="sub-menu-item">Anodizing</a>
+                            <a href="Mill Finish/Transfer/Powder Coat/index.html" class="sub-menu-item">Powder Coat</a>
+                        </div>
+                        <a href="Mill Finish/Overview/index.html" class="sub-menu-item">Overview</a>
+                    </div>
+                </div>
+
+                <div class="dropdown-container">
+                    <div class="menu-item" onclick="toggleDropdown('powderSub', this, event)">
+                        <i data-lucide="bring-to-front"></i> Powder Coat
+                        <i data-lucide="chevron-down" class="chevron-icon"></i>
+                    </div>
+                    <div class="dropdown-content" id="powderSub">
+                        <a href="Powder Coat/Wood Finish Production/index.html" class="sub-menu-item">Wood Finish Production</a>
+                        <a href="Powder Coat/Powder Coat Production/index.html" class="sub-menu-item">Powder Coat Production</a>
+                         <div class="menu-item" style="font-size: 0.85rem; padding: 10px 14px; color: rgba(255,255,255,0.4);" onclick="toggleDropdown('powderPacking', this, event)">
+                            <i data-lucide="package-check" style="width:14px"></i> Packing
+                            <i data-lucide="chevron-down" class="chevron-icon"></i>
+                        </div>
+                        <div class="nested-content" id="powderPacking">
+                            <a href="Powder Coat/Packing/PowderCoat/index.html" class="sub-menu-item">Powder Coat</a>
+                            <a href="#" class="sub-menu-item">Wood Finish</a>
+                        </div>
+                        <div class="menu-item" style="font-size: 0.85rem; padding: 10px 14px; color: rgba(255,255,255,0.4);" onclick="toggleDropdown('powderDamage', this, event)">
+                            <i data-lucide="alert-triangle" style="width:14px"></i> Special Production
+                            <i data-lucide="chevron-down" class="chevron-icon"></i>
+                        </div>
+                        <div class="nested-content" id="powderDamage">
+                            <a href="#" class="sub-menu-item">Re-Powder</a>
+                            <a href="#" class="sub-menu-item">One Micron</a>
+                        </div>
+                        <a href="Powder Coat/Overview/index.html" class="sub-menu-item">Overview</a>
+                    </div>
+                </div>
+
+                <div class="dropdown-container">
+                    <div class="menu-item" onclick="toggleDropdown('anodizingSub', this, event)">
+                        <i data-lucide="zap"></i> Anodizing
+                        <i data-lucide="chevron-down" class="chevron-icon"></i>
+                    </div>
+                    <div class="dropdown-content" id="anodizingSub">
+                        <a href="Anodizing/Binding/index.html" class="sub-menu-item">Binding</a>
+                        <a href="Anodizing/Production/index.html" class="sub-menu-item">Production</a>
+                        <a href="Anodizing/Packing/index.html" class="sub-menu-item">Packing</a>
+                        <a href="Anodizing/Overview/index.html" class="sub-menu-item">Overview</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="container mx-auto">
+        <div class="welcome-card">
+            <h1>Welcome Back</h1>
+            <p>Production Management & Tracking System for Ultra Aluminium Plant.</p>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span id="statusText">System Online</span>
+            </div>
+            
+        </div>
+
+        <div class="section-header"><span>Extrusion</span><div class="line"></div></div>
+
+        <div class="grid grid-cols-2 gap-4 w-full max-w-[500px] mt-4">
+            <a href="Extrusion/Bucket Income/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Bucket Income</span>
+            </a>
+            <a href="Extrusion/Profile Income/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Profile Income</span>
+            </a>
+            <a href="Extrusion/Aging Details/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="history" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Aging Details</span>
+            </a>
+            <a href="Extrusion/Overview/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Overview</span>
+            </a>
+        </div>
+
+        <div class="section-header"><span>Mill Finish</span><div class="line"></div></div>
+
+        <div class="grid grid-cols-2 gap-4 w-full max-w-[500px] mt-4">
+            <a href="Mill Finish/Hardness Check/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Hardness Check</span>
+            </a>
+            <a href="Mill Finish/Mill finish Profile Stock/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="box" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Profile Stock</span>
+            </a>
+            <a href="Mill Finish/Mill finish Bucket Stock/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="archive" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Bucket Stock</span>
+            </a>
+            <a href="Mill Finish/Transfer/Anodizing/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="zap" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Anodizing Transfer</span>
+            </a>
+            <a href="Mill Finish/Transfer/Powder Coat/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="bring-to-front" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Powder Coat Transfer</span>
+            </a>
+            <a href="Mill Finish/Overview/index.html" class="hover-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Overview</span>
+            </a>
+        </div>
+
+        <div class="section-header"><span>Powder Coat</span><div class="line"></div></div>
+
+        <div class="grid grid-cols-2 gap-4 w-full max-w-[500px] mt-4">
+            <a href="Powder Coat/Wood Finish Production/index.html" class="hover-fill powder-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="palette" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Wood Finish Production</span>
+            </a>
+            <a href="Powder Coat/Powder Coat Production/index.html" class="hover-fill powder-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="wind" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Powder Coat Production</span>
+            </a>
+            <a href="Powder Coat/Packing/PowderCoat/index.html" class="hover-fill powder-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="package" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Powder Coat Packing</span>
+            </a>
+            <a href="#" class="hover-fill powder-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="package-check" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Wood Finish Packing</span>
+            </a>
+            <a href="#" class="hover-fill powder-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Re-Powder</span>
+            </a>
+            <a href="#" class="hover-fill powder-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="layers" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">One Micron</span>
+            </a>
+            <a href="Powder Coat/Overview/index.html" class="hover-fill powder-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group col-span-2">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Powder Coat Overview</span>
+            </a>
+        </div>
+
+        <div class="section-header"><span>Anodizing</span><div class="line"></div></div>
+
+        <div class="grid grid-cols-2 gap-4 w-full max-w-[500px] mt-4 pb-20">
+            <a href="Anodizing/Binding/index.html" class="hover-fill anodizing-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="link" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Binding</span>
+            </a>
+            <a href="Anodizing/Production/index.html" class="hover-fill anodizing-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="zap" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Anodizing Production</span>
+            </a>
+            <a href="Anodizing/Packing/index.html" class="hover-fill anodizing-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="package-search" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Packing</span>
+            </a>
+            <a href="Anodizing/Overview/index.html" class="hover-fill anodizing-fill flex flex-col items-center gap-3 p-6 rounded-[24px] border border-white/[0.05] backdrop-blur-md group">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-center">Overview</span>
+            </a>
+        </div>
+    </main>
+
+
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+
+        let isSidebarOpen = false;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const b1 = document.getElementById('bar1'), b2 = document.getElementById('bar2'), b3 = document.getElementById('bar3');
+            
+            isSidebarOpen = !isSidebarOpen;
+            
+            if (isSidebarOpen) {
+                sidebar.style.transform = 'translateX(0px)';
+                overlay.style.opacity = '1';
+                overlay.style.pointerEvents = 'auto';
+                b1.style.transform = 'translateY(8px) rotate(45deg)';
+                b2.style.opacity = '0';
+                b3.style.transform = 'translateY(-8px) rotate(-45deg)';
+            } else {
+                sidebar.style.transform = 'translateX(-320px)';
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                b1.style.transform = 'translateY(0px) rotate(0deg)';
+                b2.style.opacity = '1';
+                b3.style.transform = 'translateY(0px) rotate(0deg)';
+            }
+        }
+
+        function toggleDropdown(dropId, element, event) {
+            if (event) event.stopPropagation();
+            
+            const dropdown = document.getElementById(dropId);
+            const chevron = element.querySelector('.chevron-icon');
+            const isOpen = dropdown.style.display === 'flex';
+            
+            // Toggle current dropdown
+            dropdown.style.display = isOpen ? 'none' : 'flex';
+            if (chevron) {
+                chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        }
+
+        function scrollToRecent() {
+            document.getElementById('recent-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleModal(m) {
+            const modal = document.getElementById(m);
+            const isHidden = modal.classList.contains('hidden');
+            modal.classList.toggle('hidden', !isHidden);
+            modal.classList.toggle('flex', isHidden);
+            document.body.style.overflow = isHidden ? 'hidden' : '';
+        }
+
+        function searchProfile(v) {
+            const sug = document.getElementById('profileSuggestions');
+            if (!v || v.length < 1) { sug.style.display = 'none'; return; }
+            const f = PROFILES.filter(p => p.toLowerCase().includes(v.toLowerCase())).slice(0, 10);
+            if (f.length > 0) {
+                sug.innerHTML = f.map(p => `<div class="p-3 hover:bg-[#56de4a]/10 cursor-pointer text-sm text-white/70 border-b border-white/5 last:border-0" onclick="selectProfile('${p}')">${p}</div>`).join('');
+                sug.style.display = 'block';
+            } else sug.style.display = 'none';
+        }
+
+        function selectProfile(n) { document.getElementById('pName').value = n; document.getElementById('profileSuggestions').style.display = 'none'; }
+
+        function calcYield() {
+            const i = parseFloat(document.getElementById('inW').value) || 0, o = parseFloat(document.getElementById('outW').value) || 0;
+            document.getElementById('yld').value = i > 0 ? ((o/i)*100).toFixed(2) + '%' : '0.00%';
+        }
+
+        document.addEventListener('change', e => {
+            if (e.target.classList.contains('l-check')) {
+                const row = e.target.closest('.length-row'), qty = row.querySelector('.l-qty-input');
+                qty.style.display = e.target.checked ? 'block' : 'none';
+                if (e.target.checked) setTimeout(() => qty.focus(), 50);
+                if (e.target.id === 'cOther') {
+                    const ov = document.getElementById('otherVal'); ov.style.display = e.target.checked ? 'block' : 'none';
+                    if (e.target.checked) setTimeout(() => ov.focus(), 50);
+                }
+            }
+        });
+
+        function saveEntry() {
+            const e = {
+                date: document.getElementById('extDate').value, pName: document.getElementById('pName').value, uWeight: document.getElementById('uWeight').value,
+                type: document.getElementById('pType').value, dieNo: document.getElementById('dieNo').value, bLength: document.getElementById('bBatch').value,
+                bQty: document.getElementById('bQty').value, inW: document.getElementById('inW').value, outW: document.getElementById('outW').value,
+                offCut: document.getElementById('offCutVal').value, yield: document.getElementById('yld').value, status: document.getElementById('dieStatus').value,
+                lengths: {
+                    '3.65m': document.getElementById('c365').checked ? document.getElementById('q365').value : null,
+                    '6.10m': document.getElementById('c610').checked ? document.getElementById('q610').value : null,
+                    '6.50m': document.getElementById('c650').checked ? document.getElementById('q650').value : null,
+                    'Custom': document.getElementById('cOther').checked ? `${document.getElementById('otherVal').value}m (${document.getElementById('qOther').value} qty)` : null
+                }
+            };
+            entries.unshift(e); updateRecentList(); toggleModal('entry-modal'); document.getElementById('profileForm').reset();
+            document.querySelectorAll('.l-qty-input, #otherVal').forEach(x => x.style.display = 'none');
+        }
+
+        function updateRecentList() {
+            const list = document.getElementById('recent-entries-list'), sub = document.getElementById('final-submit-container'), sec = document.getElementById('recent-section');
+            if (entries.length === 0) { sub.classList.add('opacity-0'); return; }
+            sub.classList.remove('opacity-0', 'translate-y-10'); sub.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            sec.classList.remove('opacity-0', 'translate-y-4'); sec.classList.add('opacity-100', 'translate-y-0');
+            list.innerHTML = entries.map((e, i) => `<div onclick="showDetails(${i})" class="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-2xl hover:border-[#56de4a]/40 hover:bg-[#56de4a]/5 transition-all cursor-pointer group"><span class="text-white font-bold uppercase tracking-widest text-xs group-hover:text-[#56de4a] transition-colors">${e.pName}</span><i data-lucide="chevron-right" class="w-4 h-4 text-white/20 group-hover:text-[#56de4a]"></i></div>`).join('');
+            lucide.createIcons();
+        }
+
+        function showDetails(i) {
+            const e = entries[i], cont = document.getElementById('details-content');
+            let lHTML = Object.entries(e.lengths).filter(([_, v]) => v !== null).map(([k, v]) => `<div class="flex justify-between border-b border-white/5 py-2"><span class="text-white/40 text-xs uppercase">${k}</span><span class="text-white font-bold text-xs">${v}</span></div>`).join('');
+            cont.innerHTML = `<div class="space-y-4"><div class="grid grid-cols-2 gap-4"><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[9px] text-white/30 uppercase mb-1">Date</p><p class="text-white text-xs font-bold">${e.date}</p></div><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[9px] text-white/30 uppercase mb-1">Die No</p><p class="text-white text-xs font-bold">#${e.dieNo}</p></div></div><div class="bg-[#56de4a]/5 border border-[#56de4a]/10 p-4 rounded-xl text-center"><p class="text-[9px] text-[#56de4a] uppercase mb-1">Profile Name</p><p class="text-white text-base font-black uppercase">${e.pName}</p></div><div class="grid grid-cols-3 gap-3"><div class="bg-white/5 p-3 rounded-xl text-center"><p class="text-[8px] text-white/30 uppercase mb-1">Type</p><p class="text-white text-[10px] font-bold">${e.type}</p></div><div class="bg-white/5 p-3 rounded-xl text-center"><p class="text-[8px] text-white/30 uppercase mb-1">Weight</p><p class="text-white text-[10px] font-bold">${e.uWeight} kg</p></div><div class="bg-white/5 p-3 rounded-xl text-center"><p class="text-[8px] text-white/30 uppercase mb-1">Status</p><p class="text-[#56de4a] text-[10px] font-bold">${e.status}</p></div></div><div class="bg-white/5 p-4 rounded-xl"><p class="text-[9px] text-white/30 uppercase mb-3 text-center">Lengths Produced</p>${lHTML || '<p class="text-white/20 italic text-[10px] text-center">None</p>'}</div><div class="grid grid-cols-2 gap-4"><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[9px] text-white/30 uppercase mb-1">Billet Qty</p><p class="text-white text-xs font-bold">${e.bQty} (${e.bLength}m)</p></div><div class="bg-[#56de4a]/5 border border-[#56de4a]/20 p-4 rounded-xl text-center"><p class="text-[9px] text-[#56de4a] uppercase mb-1">Yield</p><p class="text-[#56de4a] text-lg font-black">${e.yield}</p></div></div></div>`;
+            toggleModal('details-modal');
+        }
+
+        async function startFinalSync() {
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwahvw9PRDHbJ-oDTH8p7T71FeXfBmcSlsL2MpiQtCpfInb4I9_a6xN96bUVMqqsh3F/exec';
+            toggleModal('final-confirm-modal');
+            const sm = document.getElementById('sync-modal'), sb = document.getElementById('sync-bar'), sp = document.getElementById('sync-progress'), st = document.getElementById('sync-status');
+            sm.classList.remove('hidden'); sm.classList.add('flex');
+            const syncPromise = fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ entries: entries }) });
+            const steps = [{ p: 20, s: 'Connecting' }, { p: 45, s: 'Packaging' }, { p: 75, s: 'Uploading' }, { p: 90, s: 'Verifying' }, { p: 100, s: 'Complete' }];
+            for (const step of steps) { await new Promise(r => setTimeout(r, 600)); sb.style.width = step.p + '%'; sp.innerText = step.p + '%'; st.innerText = step.s; }
+            try { await syncPromise; } catch(e) {}
+            setTimeout(() => { sm.classList.add('opacity-0'); setTimeout(() => location.reload(), 800); }, 1000);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (isSidebarOpen) toggleSidebar();
+                ['final-confirm-modal', 'entry-modal', 'details-modal'].forEach(m => {
+                    const el = document.getElementById(m);
+                    if (el && !el.classList.contains('hidden')) toggleModal(m);
+                });
+            }
+        });
+
+        // Track mouse position for the "fill from point" animation
+        function initHoverFill() {
+            document.querySelectorAll('.hover-fill').forEach(button => {
+                button.addEventListener('mouseenter', e => {
+                    const rect = button.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    button.style.setProperty('--mouse-x', x + '%');
+                    button.style.setProperty('--mouse-y', y + '%');
+                });
+            });
+        }
+
+        function initWelcomeGlow() {
+            const card = document.querySelector('.welcome-card');
+            if (!card) return;
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                card.style.setProperty('--mouse-x', x + '%');
+                card.style.setProperty('--mouse-y', y + '%');
+            });
+        }
+
+        initHoverFill();
+        initWelcomeGlow();
+    </script>
+</body>
+</html>
