@@ -265,10 +265,13 @@ export function AuthForm() {
           } else {
             clearRememberedUser();
           }
-          // Optional: redirect to the link returned in Column F
-          if (result.link && typeof result.link === "string" && /^https?:\/\//.test(result.link)) {
-            // Uncomment to auto-redirect:
-            // window.location.href = result.link;
+          // Redirect to the link returned in Column F.
+          // Accepts both absolute URLs (https://…) and relative paths
+          // (home.html, Extrusion/index.html, ./foo, etc.).
+          if (typeof result.link === "string" && result.link.trim()) {
+            const target = result.link.trim();
+            const isAbsolute = /^https?:\/\//i.test(target);
+            window.location.href = isAbsolute ? target : `./${target}`;
           }
         } else {
           throw new Error(result.message || "Invalid username or password");
